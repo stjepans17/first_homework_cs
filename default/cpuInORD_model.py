@@ -196,7 +196,7 @@ class InOrdCPUCore(RiscvMinorCPU):
         self.executeFuncUnits.funcUnits[1].opLat = INTEGER_ALU_LATENCY
         self.executeFuncUnits.funcUnits[2].opLat = INTEGER_MUL_LATENCY
         self.executeFuncUnits.funcUnits[3].opLat = INTEGER_DIV_LATENCY
-        self.executeFuncUnits.funcUnits[4].opLat = FLOAT_ALE_LATENCY
+        self.executeFuncUnits.funcUnits[4].opLat = FLOAT_ALU_LATENCY
         self.executeFuncUnits.funcUnits[5].opLat = FLOAT_MUL_LATENCY
         self.executeFuncUnits.funcUnits[6].opLat = FLOAT_DIV_LATENCY
         self.executeFuncUnits.funcUnits[7].opLat = INTEGER_ALU_LATENCY # Memory access latency is the same as integer ALU latency

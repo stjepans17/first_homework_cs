@@ -29,7 +29,7 @@ board = SimpleBoard(
 
 
 # Set the workload.
-#binary = CustomResource("./workload/masked_scaled_dot_product.bin")
+binary = CustomResource("../workload/scaled_dot_product.bin")
 board.set_se_binary_workload(binary)
 
 simulator = Simulator(board=board)
