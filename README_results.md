@@ -155,6 +155,6 @@ Record for each ROB size:
 
 *Note: Metric for Squashed instruction count is: "core.numSquashedInsts"*
 
-As ROB size increases, what happens simultaneously to IPC and to instructions flushed per misprediction?
+As ROB size increases, what happens simultaneously to IPC and to instructions flushed per misprediction? .
 
-As ROB size increases from 32 to 64, IPC improves significantly (1.088 → 1.238) while squashed instructions decrease (513 → 469). The larger ROB enables more instruction-level parallelism and reduces the pipeline depth, so fewer dependent instructions are flushed per misprediction. Beyond ROB 64, IPC saturates (~1.236) but squashed instructions continue declining (469 → 442), indicating that while performance plateaus, recovery from mispredictions remains more efficient in the larger ROB due to reduced window size relative to in-flight instructions.
+As ROB size increases from 32 to 64, IPC improves significantly (from 1.088 to 1.238) while squashed instructions decrease (fomr 513 to 469). The larger ROB enables more instruction level parallelism and reduces the pipeline depth, so fewer dependent instructions are flushed per misprediction. Beyond ROB 64, IPC saturates (approx. 1.236) but squashed instructions continue declining (fomr 469 to 442), indicating that while performance plateaus, recovery from mispredictions remains more efficient in the larger ROB due to reduced window size relative to in-flight instructions.
