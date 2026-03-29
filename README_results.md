@@ -136,9 +136,9 @@ Which predictor achieves the lowest misprediction count and why?
 **TAGE** achieves the lowest misprediction count with 499 mispredictions. It uses multiple predictor tables indexed by different history lengths, allowing it to capture both the gradual shift in the causal mask branch and short-term variations through multi-scale pattern matching.
 
 Why others are worse:
-- **BiModeBP (4788 mispredictions)**: Uses only simple 2-bit saturating counters indexed by branch address. Cannot track evolving patterns because it treats each branch statically and cannot adapt to the gradually changing taken ratio.
-- **LocalBP (5430 mispredictions)**: Uses only local branch history (recent outcomes of the same branch). Struggles with the global systematic shift of the causal mask pattern across query positions.
-- **Tournament (4673 mispredictions)**: Combines global and local history selectors, but lacks TAGE's geometric hierarchy. Cannot efficiently capture patterns at multiple timescales like TAGE's layered tables.
+- **BiModeBP**: Uses only simple 2-bit saturating counters indexed by branch address therefore, it can't track evolving patterns because it treats each branch statically and can't adapt to the gradually changing taken ratio.
+- **LocalBP**: Uses only local branch history (recent outcomes of the same branch). With this it struggles with the global systematic shift of the causal mask pattern across query positions.
+- **Tournament**: Combines global and local history selectors, but lacks TAGE's geometric hierarchy. Whit its setup it can't efficiently capture patterns at multiple timescales like TAGE's layered tables.
 
 ### Task 2c
 Using the best-performing predictor from *Q2*, sweep ROB size over **32, 64, and 128 entries**:
@@ -157,4 +157,4 @@ Record for each ROB size:
 
 As ROB size increases, what happens simultaneously to IPC and to instructions flushed per misprediction? .
 
-As ROB size increases from 32 to 64, IPC improves significantly (from 1.088 to 1.238) while squashed instructions decrease (fomr 513 to 469). The larger ROB enables more instruction level parallelism and reduces the pipeline depth, so fewer dependent instructions are flushed per misprediction. Beyond ROB 64, IPC saturates (approx. 1.236) but squashed instructions continue declining (fomr 469 to 442), indicating that while performance plateaus, recovery from mispredictions remains more efficient in the larger ROB due to reduced window size relative to in-flight instructions.
+As ROB size increases from 32 to 64, IPC improves significantly while squashed instructions decrease. The larger ROB enables more instruction level parallelism and reduces the pipeline depth, so fewer dependent instructions are flushed per misprediction. Beyond ROB 64, IPC saturates but squashed instructions continue declining, indicating that while performance stops improving, recovery from mispredictions remains more efficient in the larger ROB due to reduced window size relative to in-flight instructions.
