@@ -110,11 +110,11 @@ Compile and run the masked attention workload using the baseline configuration. 
 
 | Metric | Value |
 |---|---|
-| Total instructions committed | |
-| Total cycles | |
-| IPC |  |
-| Branch instructions committed |  |
-| Branch mispredictions | |
+| Total instructions committed | 2194513 |
+| Total cycles | 1774387 |
+| IPC | 1.236773 |
+| Branch instructions committed | 335874 |
+| Branch mispredictions | 499 |
 
 
 
@@ -123,27 +123,38 @@ Run the workload with the following four branch predictors (`TournamentBP`,`Loca
 
 | Predictor | Branch mispredictions  | IPC | 
 |---|---|---|
-| TAGE | | | |
-| LocalBP |  | | |
-| Tournament | | | |
-| BimodeBP | | | |
+| TAGE | 499 | 1.236773 |
+| LocalBP | 5430 | 1.203859 |
+| Tournament | 4673 | 1.214296 |
+| BimodeBP | 4788 | 1.213011 |
 
 *Note: Metric for branch mispredictions count is: `branchPred.condIncorrect` while the metric for Branch instructions committed is: `branchPred.committed_0::total`*
 
 
 Which predictor achieves the lowest misprediction count and why?
 
+**TAGE** achieves the lowest misprediction count with 499 mispredictions. It uses multiple predictor tables indexed by different history lengths, allowing it to capture both the gradual shift in the causal mask branch and short-term variations through multi-scale pattern matching.
+
+Why others are worse:
+- **BiModeBP (4788 mispredictions)**: Uses only simple 2-bit saturating counters indexed by branch address. Cannot track evolving patterns because it treats each branch statically and cannot adapt to the gradually changing taken ratio.
+- **LocalBP (5430 mispredictions)**: Uses only local branch history (recent outcomes of the same branch). Struggles with the global systematic shift of the causal mask pattern across query positions.
+- **Tournament (4673 mispredictions)**: Combines global and local history selectors, but lacks TAGE's geometric hierarchy. Cannot efficiently capture patterns at multiple timescales like TAGE's layered tables.
+
 ### Task 2c
 Using the best-performing predictor from *Q2*, sweep ROB size over **32, 64, and 128 entries**:
+
+Our best one was TAGE.
 
 Record for each ROB size:
 
 | ROB Size | Misprediction count | IPC | Squashed instruction count |
 |---|---|---|---|
-| 32 |  | |  |
-| 64 |  |  |  |
-| 128 | |  | |
+| 32 | 501 | 1.088813 | 513 |
+| 64 | 496 | 1.238022 | 469 |
+| 128 | 499 | 1.236773 | 442 |
 
 *Note: Metric for Squashed instruction count is: "core.numSquashedInsts"*
 
-As ROB size increases, what happens simultaneously to IPC and to instructions flushed per misprediction? .
+As ROB size increases, what happens simultaneously to IPC and to instructions flushed per misprediction?
+
+As ROB size increases from 32 to 64, IPC improves significantly (1.088 → 1.238) while squashed instructions decrease (513 → 469). The larger ROB enables more instruction-level parallelism and reduces the pipeline depth, so fewer dependent instructions are flushed per misprediction. Beyond ROB 64, IPC saturates (~1.236) but squashed instructions continue declining (469 → 442), indicating that while performance plateaus, recovery from mispredictions remains more efficient in the larger ROB due to reduced window size relative to in-flight instructions.
